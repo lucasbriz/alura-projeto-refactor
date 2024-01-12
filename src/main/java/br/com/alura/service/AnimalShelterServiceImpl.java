@@ -1,22 +1,25 @@
 package br.com.alura.service;
 
+import br.com.alura.client.ClientHttpConfiguration;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Scanner;
 
 public class AnimalShelterServiceImpl implements AnimalShelterService {
 
+  private final ClientHttpConfiguration client;
+
+  public AnimalShelterServiceImpl(ClientHttpConfiguration client) {
+    this.client = client;
+  }
+
   public void listAnimalShelter() throws InterruptedException, IOException {
-    HttpClient client = HttpClient.newHttpClient();
     String uri = "http://localhost:8080/abrigos";
-    HttpResponse<String> response = startGetRequest(client, uri);
+    HttpResponse<String> response = client.startGetRequest(uri);
     String responseBody = response.body();
     JsonArray jsonArray = JsonParser.parseString(responseBody).getAsJsonArray();
     System.out.println("Abrigos cadastrados:");
@@ -41,10 +44,9 @@ public class AnimalShelterServiceImpl implements AnimalShelterService {
     json.addProperty("telefone", telefone);
     json.addProperty("email", email);
 
-    HttpClient client = HttpClient.newHttpClient();
     String uri = "http://localhost:8080/abrigos";
 
-    HttpResponse<String> response = startPostRequest(client, uri, json);
+    HttpResponse<String> response = client.startPostRequest(uri, json);
 
     int statusCode = response.statusCode();
     String responseBody = response.body();
@@ -56,24 +58,4 @@ public class AnimalShelterServiceImpl implements AnimalShelterService {
       System.out.println(responseBody);
     }
   }
-
-  private HttpResponse<String> startGetRequest(HttpClient client, String uri)
-      throws IOException, InterruptedException {
-    HttpRequest request = HttpRequest.newBuilder()
-        .uri(URI.create(uri))
-        .method("GET", HttpRequest.BodyPublishers.noBody())
-        .build();
-    return client.send(request, HttpResponse.BodyHandlers.ofString());
-  }
-
-  private HttpResponse<String> startPostRequest(HttpClient client, String uri, JsonObject json)
-      throws IOException, InterruptedException {
-    HttpRequest request = HttpRequest.newBuilder()
-        .uri(URI.create(uri))
-        .header("Content-Type", "application/json")
-        .method("POST", HttpRequest.BodyPublishers.ofString(json.toString()))
-        .build();
-    return client.send(request, HttpResponse.BodyHandlers.ofString());
-  }
-
 }
