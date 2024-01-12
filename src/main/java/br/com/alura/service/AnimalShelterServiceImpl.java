@@ -1,6 +1,7 @@
 package br.com.alura.service;
 
 import br.com.alura.client.ClientHttpConfiguration;
+import br.com.alura.domain.AnimalShelter;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -33,20 +34,17 @@ public class AnimalShelterServiceImpl implements AnimalShelterService {
 
   public void createAnimalShelter() throws IOException, InterruptedException {
     System.out.println("Digite o nome do abrigo:");
-    String nome = new Scanner(System.in).nextLine();
+    String name = new Scanner(System.in).nextLine();
     System.out.println("Digite o telefone do abrigo:");
-    String telefone = new Scanner(System.in).nextLine();
+    String telephone = new Scanner(System.in).nextLine();
     System.out.println("Digite o email do abrigo:");
     String email = new Scanner(System.in).nextLine();
 
-    JsonObject json = new JsonObject();
-    json.addProperty("nome", nome);
-    json.addProperty("telefone", telefone);
-    json.addProperty("email", email);
+    AnimalShelter animalShelter = new AnimalShelter(name, telephone, email);
 
     String uri = "http://localhost:8080/abrigos";
 
-    HttpResponse<String> response = client.startPostRequest(uri, json);
+    HttpResponse<String> response = client.startPostRequest(uri, animalShelter);
 
     int statusCode = response.statusCode();
     String responseBody = response.body();
